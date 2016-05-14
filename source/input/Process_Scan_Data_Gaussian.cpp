@@ -1,14 +1,15 @@
 /*
- * Process_Opt_Date.cpp
+ * Process_Scan_Data.cpp
  *
  *  Created on: 19.12.2015
  *      Author: DetlevCM
  */
 
+
 #include<Headers.h>
 
 
-void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filename)
+void Process_Scan_Data_Gaussian(vector< OptPoints >& GaussianData, string filename)
 {
 	string line;
 	OptPoints SingleOptPoint;
@@ -21,11 +22,8 @@ void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filenam
 
 		getline(DataInputFile,line);
 
-		size_t found = line.find("Input orientation:"); // seems to be the norm for an opt
-		//size_t found = line.find("Standard orientation:");
 		// after standard orientation we get energy info
-
-		if (found!=string::npos) // We have found a Z-Matrix
+		if (line.find("Standard orientation:")!=string::npos) // We have found a Z-Matrix
 		{
 
 			/*                           Input orientation:
@@ -47,7 +45,10 @@ void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filenam
 			getline(DataInputFile,line);
 			// pass the "gibberish" (header & table setup)
 
+
 			getline(DataInputFile,line); // this is our first data setup
+
+
 
 
 			SingleMolecule.clear();
@@ -56,21 +57,8 @@ void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filenam
 				// now work on line
 				AtomDefinition AtomsInMolecule;
 
-				char * cstr, *p;
-				string str = line;
 				vector< double > temp;
-
-				cstr = new char [str.size()+1];
-				strcpy (cstr, str.c_str());
-
-				p=strtok (cstr," 	");
-				while (p!=NULL)
-				{
-					temp.push_back(strtod(p,NULL));
-					p=strtok(NULL," 	");
-				}
-				delete[] cstr;
-				delete[] p;
+				temp = Tokenise_String_To_Double(line," 	");
 
 				// Now sort the vector temp...
 				AtomsInMolecule.CenterID = (int) temp[0];
@@ -88,8 +76,7 @@ void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filenam
 
 
 
-		found = line.find("SCF Done: ");
-		if (found!=string::npos) // We have found energy
+		if (line.find("SCF Done: ")!=string::npos) // We have found energy
 		{
 			// This one gives us the energy
 			/*
@@ -98,69 +85,12 @@ void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filenam
 			 * Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=1 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
 			 *
 			 */
-
-			char * cstr, *p;
-			string str = line;
 			vector< double > temp;
-
-			cstr = new char [str.size()+1];
-			strcpy (cstr, str.c_str());
-
-			p=strtok (cstr,"= 	");
-			while (p!=NULL)
-			{
-				temp.push_back(strtod(p,NULL));
-				p=strtok(NULL," 	");
-			}
-			delete[] cstr;
-			delete[] p;
+			temp = Tokenise_String_To_Double(line,"= 	");
 
 			SingleOptPoint.Energy = temp[4];
 			temp.clear();
 		}
-
-		// this is only for the final output
-		/*
-			found = line.find("Sum of electronic and zero-point Energies=");
-			if (found!=string::npos) // We have found energy
-			{
-				double energy = 0;
-		//*/
-		// This one gives us the energy
-		/*
-		 *  Zero-point correction=                           0.233621 (Hartree/Particle)
-		 *  Thermal correction to Energy=                    0.245879
-		 *  Thermal correction to Enthalpy=                  0.246823
-		 *  Thermal correction to Gibbs Free Energy=         0.195349
-		 *  Sum of electronic and zero-point Energies=           -519.854892
-		 *  Sum of electronic and thermal Energies=              -519.842633
-		 *  Sum of electronic and thermal Enthalpies=            -519.841689
-		 *  Sum of electronic and thermal Free Energies=         -519.893163
-		 */
-		/*
-				char * cstr, *p;
-				string str = line;
-				vector< double > temp;
-
-				cstr = new char [str.size()+1];
-				strcpy (cstr, str.c_str());
-
-				p=strtok (cstr,"= 	");
-				while (p!=NULL)
-				{
-					cout << p << "|";
-					temp.push_back(strtod(p,NULL));
-					p=strtok(NULL," 	");
-				}
-				delete[] cstr;
-				delete[] p;
-
-				energy = temp[1];
-				SingleOptPoint.Energy = energy;
-				//cout << temp[4] << "\n";
-				temp.clear();
-				//cout << "\n";
-			}//*/
 
 
 
@@ -228,19 +158,23 @@ void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filenam
 		 * ...
 		 */
 
-		if(SingleMolecule.size() > 0)
+
+		if(line.find("Step number")!=string::npos) // We have found Step Identification
 		{
+			vector< string > temp;
+			temp = Tokenise_String_To_String(line," 	");
+
 			// Now pick the points we need
 			// 2, 8, 12, 14
-			//		SingleOptPoint.ScanStep = strtod(temp[2].c_str(),NULL);
-			//		SingleOptPoint.OptStep = strtod(temp[8].c_str(),NULL);
-			//		SingleOptPoint.OptStepMax = strtod(temp[12].c_str(),NULL);
+
+			SingleOptPoint.ScanStep = (int) strtod(temp[2].c_str(),NULL);
+			SingleOptPoint.OptStep = (int) strtod(temp[8].c_str(),NULL);
+			SingleOptPoint.OptStepMax = (int) strtod(temp[12].c_str(),NULL);
 			SingleOptPoint.Molecule = SingleMolecule;
 			//SingleOptPoint.Energy = energy;
 
 			GaussianData.push_back(SingleOptPoint);
 			SingleMolecule.clear();
-
 		}
 
 
@@ -258,4 +192,5 @@ void Process_Opt_Data_Gaussian(vector< OptPoints >& GaussianData, string filenam
 		GaussianData.push_back(SingleOptPoint);
 		SingleMolecule.clear();
 	}
+
 }

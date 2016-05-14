@@ -10,6 +10,8 @@
 
 
 
-vector< string > Tokenise_String(string , string );
+vector< string > Tokenise_String_To_String(string , string );
+
+vector< double > Tokenise_String_To_Double(string , string );
 
 #endif /* HEADERS_HELPERS_H_ */
