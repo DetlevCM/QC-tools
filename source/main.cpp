@@ -13,11 +13,12 @@
 
 int main(int argc, char* argv[])
 {
-	string filename;
+	//string filename;
 	string input;
 	int type = 0;	// output type 0 = csv , 1 = txt (default)
 
 	bool InputIsFilename = true;
+
 
 	while(true) // loop until user quits
 	{
@@ -47,7 +48,7 @@ int main(int argc, char* argv[])
 			InputIsFilename = false;
 		}
 
-		if(InputIsFilename)
+		if(InputIsFilename)// || !filename.empty())
 		{
 
 			string input_filename, output_filename;
@@ -79,9 +80,6 @@ int main(int argc, char* argv[])
 
 					string line;
 					getline(DataInputFile,line);
-
-
-					//					size_t found;
 
 
 					// this is the first line for a Gaussian Input

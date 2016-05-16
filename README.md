@@ -1,7 +1,5 @@
-# QC-tools
-This is the successor to the previous "gaussian-tools".
+# Gaussian Tools
 A simple utility to extract some data from Gaussian 09 log files. (Command Line Application)
-Support for ORCA files is under way but should be considered unstable and experimental.
 
 The code traverses a Gaussian Log File and can return the following values:
 - SCF Energy Calculation value of the molecule (default, always output)
@@ -12,3 +10,7 @@ The code traverses a Gaussian Log File and can return the following values:
 For a scan calculation, output is provided at every scan step. For an optimisation every step is ouput.
 IRC calculations are currently not officially supported but seem to work as well (just don't provide a pretty plot).
 
+Linux Users: Please compile the code using the Eclipse generated Makefiles in "Release Makefile", you need a C++ compiler.
+
+Windows Users: A binary for use with a 64Bit OS is supplied (in "Release Makefile").
+Alternatively you can compile your own using either MinGW or your favourite compiler using the supplied makefiles.
