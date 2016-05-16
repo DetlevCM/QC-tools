@@ -40,6 +40,7 @@ void Process_Opt_Data_ORCA(vector< OptPoints >& GaussianData, string filename)
 		// Speaking of Units...
 		// http://www.translatorscafe.com/cafe/EN/units-converter/length/62-63/angstrom-a_u__of_length/
 		// 1 Angstroem = 1.889725988579 atomic unit of length
+		double AUtoAngstrom = 1.889725988579;
 
 		if (line.find("CARTESIAN COORDINATES (A.U.)")!=string::npos) // xyz matrix starts here
 		//if (line.find("CARTESIAN COORDINATES (ANGSTROEM)")!=string::npos) // xyz matrix starts here
@@ -63,9 +64,9 @@ void Process_Opt_Data_ORCA(vector< OptPoints >& GaussianData, string filename)
 				AtomsInMolecule.CenterID = (int) temp[0];
 				AtomsInMolecule.AtomNumber = 0;
 				AtomsInMolecule.AtomType = 0;
-				AtomsInMolecule.X = temp[5];
-				AtomsInMolecule.Y = temp[6];
-				AtomsInMolecule.Z = temp[7];
+				AtomsInMolecule.X = temp[5]/AUtoAngstrom;
+				AtomsInMolecule.Y = temp[6]/AUtoAngstrom;
+				AtomsInMolecule.Z = temp[7]/AUtoAngstrom;
 
 				SingleMolecule.push_back(AtomsInMolecule);
 				temp.clear(); // just in case
