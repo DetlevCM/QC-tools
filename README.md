@@ -1,4 +1,4 @@
-# Gaussian Tools
+# QC-Tools
 A simple utility to extract some data from Gaussian 09 log files. (Command Line Application)
 
 The code traverses a Gaussian Log File and can return the following values:
